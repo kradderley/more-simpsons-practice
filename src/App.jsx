@@ -1,35 +1,46 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { Component } from "react";
+import axios from "axios";
+import Loading from "./components/Loading";
+import Simpsons from "./components/Simpsons";
+import "./App.css";
 
-function App() {
-  const [count, setCount] = useState(0)
+class App extends Component {
+  state = {};
 
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+  async componentDidMount() {
+    const { data } = await axios.get(
+      `https://thesimpsonsquoteapi.glitch.me/quotes?count=10`
+    );
+
+    // to create a unique id that works as a key 
+    data.forEach((element, index) => {
+      element.id = index + Math.random();
+    })
+    this.setState({ simpsons: data });
+  }
+
+  onDelete = (id) => {
+    const indexOf = this.state.simpsons.findIndex((value) => {
+      return value.id === id;
+    });
+
+    const simpsons = [...this.state.simpsons];
+    simpsons.splice(indexOf, 1);
+    this.setState({ simpsons });
+  };
+
+  render() {
+    const { simpsons } = this.state;
+
+    if (!this.state.simpsons) return <Loading />;
+
+    return (
+      <>
+        <h1>Total No. of Liked Characters: </h1>
+        <Simpsons simpsons={simpsons} onDelete={this.onDelete} />
+      </>
+    );
+  }
 }
 
-export default App
+export default App;
