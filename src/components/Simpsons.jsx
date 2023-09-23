@@ -17,7 +17,9 @@ class Simpsons extends Component {
               onDelete={this.props.onDelete}
             />
           );
+        
         })}
+  
       </>
       // <ol>
       //   {simpsons.map((item) => {
